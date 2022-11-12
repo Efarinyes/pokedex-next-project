@@ -9,8 +9,8 @@ import { pokeApi } from '../../api';
 import { Layout } from '../../components/layouts'
 import { Pokemon } from '../../interfaces';
 
-import { localPreferits } from '../../utilitats';
-import { getPokemonInfo } from '../../utilitats/getPokemonInfo';
+import { getPokemonInfo, localPreferits } from '../../utilitats';
+import { PokemonListResponse } from '../../interfaces/pokemon-list';
 
 
 
@@ -18,7 +18,8 @@ interface Props {
   pokemon: Pokemon
 }
 
-const PokemonPage: NextPage<Props> = ({pokemon}) => {
+const PokemonByNamePage: NextPage<Props> = ({pokemon}) => {
+  
 
 const [esAPreferits, setEsAPreferits] = useState(false)
 
@@ -112,11 +113,11 @@ const [esAPreferits, setEsAPreferits] = useState(false)
 
 export const getStaticPaths: GetStaticPaths = async (ctx) => {
 
-  const pokemon151 = [ ...Array(151)].map((value, index) => `${index + 1 }` )
-  
+  const { data } = await pokeApi.get<PokemonListResponse>('/pokemon?limit=151')
+  const pokemonsName: string[] = data.results.map( pokemon => pokemon.name )
   return {
-    paths: pokemon151.map(id => ( {
-      params: { id }
+    paths: pokemonsName.map(name => ( {
+      params: { name }
     })),
     fallback: false
   }
@@ -129,17 +130,16 @@ export const getStaticPaths: GetStaticPaths = async (ctx) => {
 
 export const getStaticProps: GetStaticProps = async ({ params}) => {
 
-  const { id } = params as { id: string }
-
+  const { name } = params as { name: string }
   
   // console.log(data);
-   // "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/132.svg"
+  // "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/132.svg"
 
   return {
     props: {
-     pokemon: await getPokemonInfo(id)
+      pokemon: await getPokemonInfo(name)
     }
   }
 }
 
-export default PokemonPage
+export default PokemonByNamePage
