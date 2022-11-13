@@ -119,7 +119,7 @@ export const getStaticPaths: GetStaticPaths = async (ctx) => {
     paths: pokemonsName.map(name => ( {
       params: { name }
     })),
-    fallback: false
+    fallback: 'blocking'
   }
 }
 // You should use getStaticProps when:
@@ -131,14 +131,25 @@ export const getStaticPaths: GetStaticPaths = async (ctx) => {
 export const getStaticProps: GetStaticProps = async ({ params}) => {
 
   const { name } = params as { name: string }
+  const pokemon = await getPokemonInfo(name)
+
+  if(!pokemon) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false
+      }
+    }
+  }
   
   // console.log(data);
   // "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/132.svg"
 
   return {
     props: {
-      pokemon: await getPokemonInfo(name)
-    }
+      pokemon
+    },
+    revalidate: 86400 //Temps en segons * un dia
   }
 }
 
