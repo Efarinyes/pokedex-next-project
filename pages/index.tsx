@@ -5,8 +5,6 @@ import { Layout } from '../components/layouts';
 import { pokeApi } from '../api';
 import { PokemonListResponse, SmallPokemons } from '../interfaces';
 import { PokemonCard } from '../components/pokemon';
-import Image from 'next/image';
-
 
 interface Props {
   pokemons: SmallPokemons[]
@@ -16,7 +14,7 @@ const HomePage: NextPage<Props> = ({ pokemons }) => {
 
   return (
     <Layout title='Llistat de Pokemons'>
-      
+
       <Grid.Container gap={2} justify='flex-start'>
         {
           pokemons.map((pokemon) => (
@@ -36,8 +34,6 @@ const HomePage: NextPage<Props> = ({ pokemons }) => {
 //- The data can be publicly cached (not user-specific).
 //- The page must be pre-rendered (for SEO) and be very fast — getStaticProps generates HTML and JSON files, both of which can be cached by a CDN for performance.
 
-
-
 export const getStaticProps: GetStaticProps = async (ctx) => {
 
   const { data } = await pokeApi.get<PokemonListResponse>('/pokemon?limit=151')
@@ -56,6 +52,5 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
     }
   }
 }
-
 
 export default HomePage
